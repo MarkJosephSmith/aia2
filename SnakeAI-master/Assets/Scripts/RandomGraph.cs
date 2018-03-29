@@ -62,11 +62,33 @@ public class RandomGraph : MonoBehaviour {
 			Assert.IsTrue (false);
 		}
 
-		//decide how many open verts we have
-		int OpenVerts = UnityEngine.Random.Range(1,5);
+		//Look around this node for walls, other nodes with open verts, open spaces, and use some sort of randomization to decide what connections we want.
+		int PossibleVerts = 4;
+
+		//these checks are all individual, no else's or else if's because the graph could be a single square.
+		if (x == 0) 
+		{
+			PossibleVerts--;
+		}
+		if( x == (MaxXNodes-1))
+		{
+			PossibleVerts--;
+		}
+
+		if (y == 0) 
+		{
+			PossibleVerts--;
+		}
+		if( y == (MaxYNodes-1))
+		{
+			PossibleVerts--;
+		}
+
+		int OpenVerts = (PossibleVerts > 0 ?  UnityEngine.Random.Range(1,PossibleVerts) : 0);
 		int FilledVerts = 0;
 
-		//now look around us for nodes with open verts
+
+
 
 
 		return ToReturn;

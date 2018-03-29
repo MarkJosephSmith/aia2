@@ -7,6 +7,9 @@ public class GraphVert : MonoBehaviour {
 	private GraphNode FirstNode { set; get;}
 	private GraphNode SecondNode { set; get;}
 
+	bool FirstNodeOpen;
+	bool SecondNodeOpen;
+
 	// Use this for initialization
 	void Start () {
 		 

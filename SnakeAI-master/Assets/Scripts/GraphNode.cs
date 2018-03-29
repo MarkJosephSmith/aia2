@@ -13,6 +13,7 @@ public class GraphNode : MonoBehaviour {
 	int NumOpenVerts {get; set;}
 	int X { get; set;}
 	int Y { get; set;}
+	bool IsWall { get; set;} //A wall node has only one node connected to it and that vert is always closed.
 
 	// Use this for initialization
 	void Start () {

@@ -2,18 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GraphNode : MonoBehaviour {
+public class GraphNode{ // : MonoBehaviour {                   //public class GraphNode{   //public class GraphNode : MonoBehaviour {
 
 	//GraphVert [] MyVerts = new GraphVert[4];
-	GraphVert UpVert;
-	GraphVert DownVert;
-	GraphVert LeftVert;
-	GraphVert RightVert;
-	int NumVerts { get; set; } //how many verts I currently have
-	int NumOpenVerts {get; set;}
-	int X { get; set;}
-	int Y { get; set;}
-	bool IsWall { get; set;} //A wall node has only one node connected to it and that vert is always closed.
+	public GraphVert UpVert = new GraphVert();
+	public GraphVert DownVert = new GraphVert();
+	public GraphVert LeftVert = new GraphVert();
+	public GraphVert RightVert = new GraphVert();
+	public int NumVerts {  get;  set; } //how many verts I currently have
+	public int NumPossibleVerts {  get;  set;} //max number of verts I could have.
+	public int X {  get;  set;}
+	public int Y {  get;  set;}
+	public bool IsWall {  get;  set;} //A wall node has only one node connected to it and that vert is always closed.
+	public int MyNodeNumber;
+
+	public GraphNode (){
+	}
 
 	// Use this for initialization
 	void Start () {

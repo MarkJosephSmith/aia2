@@ -1,14 +1,19 @@
-﻿using System.Collections;
+﻿/*WARNING!  THESE ARE ACTUALLY THE GRAPH EDGES, NOT VERTICIES.*/
+
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+/*WARNING!  THESE ARE ACTUALLY THE GRAPH EDGES, NOT VERTICIES.*/
+public class GraphVert {    // : MonoBehaviour {
 
-public class GraphVert : MonoBehaviour {
+	public GraphNode FirstNode;
+	public GraphNode SecondNode;
 
-	private GraphNode FirstNode { set; get;}
-	private GraphNode SecondNode { set; get;}
 
-	bool FirstNodeOpen;
-	bool SecondNodeOpen;
+	public bool FirstNodeOpen;
+	public bool SecondNodeOpen;
+	public bool LinksToWall;
 
 	// Use this for initialization
 	void Start () {
@@ -20,7 +25,7 @@ public class GraphVert : MonoBehaviour {
 		
 	}
 
-	bool HasFirst()
+	public bool HasFirst()
 	{ 
 		if (FirstNode == null)
 		{
@@ -29,7 +34,7 @@ public class GraphVert : MonoBehaviour {
 		return true;
 	}
 
-	bool HasSecond()
+	public bool HasSecond()
 	{ 
 		if (SecondNode == null)
 		{

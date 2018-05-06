@@ -67,6 +67,7 @@ public class RandomGraph { // : MonoBehaviour {
 		GraphNode ToReturn = new GraphNode ();
 		ToReturn.X = x;
 		ToReturn.Y = y;
+		int ReserveVertForCreator = (Creator >= 0) ? 1 : 0;
 
 		int ActualYOffset = y * MaxXNodes;
 
@@ -115,7 +116,7 @@ public class RandomGraph { // : MonoBehaviour {
 		}
 
 		int OpenVerts = (PossibleVerts > 0 ?  UnityEngine.Random.Range(1,PossibleVerts+1) : 0);
-		int FilledVerts = 0;
+		int FilledVerts = 0 + ReserveVertForCreator;
 
 		//set up the node's variables:
 		ToReturn.NumVerts = OpenVerts;
@@ -130,7 +131,7 @@ public class RandomGraph { // : MonoBehaviour {
 			ToReturn.LeftVert = MyParent.RightVert;
 			ToReturn.LeftVert.SecondNode = ToReturn;
 			ToReturn.LeftVert.SecondNodeOpen = true;
-			FilledVerts++;
+			ToReturn.LeftVert.FirstNodeOpen = true;
 		}
 		else if(Creator == 1)//my creator made me to his left, he is to my right.
 		{
@@ -138,7 +139,7 @@ public class RandomGraph { // : MonoBehaviour {
 			ToReturn.RightVert = MyParent.LeftVert;
 			ToReturn.RightVert.SecondNode = ToReturn;
 			ToReturn.RightVert.SecondNodeOpen = true;
-			FilledVerts++;
+			ToReturn.RightVert.FirstNodeOpen = true;
 		}
 		else if (Creator == 2) //my creator made me to his down, he is to my up.
 		{
@@ -146,7 +147,7 @@ public class RandomGraph { // : MonoBehaviour {
 			ToReturn.UpVert = MyParent.DownVert;
 			ToReturn.UpVert.SecondNode = ToReturn;
 			ToReturn.UpVert.SecondNodeOpen = true;
-			FilledVerts++;
+			ToReturn.UpVert.FirstNodeOpen = true;
 		}
 		else if (Creator == 3) //my creator made me to his up, he is to my down.
 		{
@@ -154,7 +155,7 @@ public class RandomGraph { // : MonoBehaviour {
 			ToReturn.DownVert = MyParent.UpVert;
 			ToReturn.DownVert.SecondNode = ToReturn;
 			ToReturn.DownVert.SecondNodeOpen = true;
-			FilledVerts++;
+			ToReturn.DownVert.FirstNodeOpen = true;
 		}
 
 
@@ -172,24 +173,17 @@ public class RandomGraph { // : MonoBehaviour {
 				ToReturn.LeftVert = ToCheck.RightVert;
 				ToReturn.LeftVert.SecondNode = ToReturn;
 
-
-
-				//set to open for the vert that spawned us
-				//if (Creator == 1 && !ToReturn.LeftVert.SecondNodeOpen) //my creator made me to his left, he is to my right.
-				//{
-				//	ToReturn.RightVert.SecondNodeOpen = true;
-				//	FilledVerts++;
-				//}
-
-
 				//sanity check to make sure I remember how object references work in C++
 				Assert.IsTrue(ToCheck.RightVert.SecondNode != null);
 				Assert.IsTrue(ToCheck.RightVert.SecondNode == ToReturn);
 
 
 				//set the status of the verts and register with the appropriate list
-
-				if (OpenVerts > FilledVerts)
+				if (Creator == 0 && !ToReturn.LeftVert.SecondNodeOpen) //my creator made me to his right, he is to my left.
+				{
+					ToReturn.LeftVert.SecondNodeOpen = true;				//set to open for the vert that spawned us
+				}
+				else if (OpenVerts > FilledVerts) 
 				{
 					ToReturn.LeftVert.SecondNodeOpen = true;
 					FilledVerts++;
@@ -233,26 +227,16 @@ public class RandomGraph { // : MonoBehaviour {
 				ToReturn.RightVert = ToCheck.LeftVert;
 				ToReturn.RightVert.SecondNode = ToReturn;
 
-				//set to open for the vert that spawned us
-				if (Creator == 0 && !ToReturn.LeftVert.SecondNodeOpen) //my creator made me to his right, he is to my left.
-				{
-					ToReturn.LeftVert.SecondNodeOpen = true;
-					FilledVerts++;
-				}
-
-				//set to open for the vert that spawned us
-				if (Creator == 1 && !ToReturn.LeftVert.SecondNodeOpen) //my creator made me to his left, he is to my right.
-				{
-					ToReturn.RightVert.SecondNodeOpen = true;
-					FilledVerts++;
-				}
-
 				//sanity check to make sure I remember how object references work in C++
 				Assert.IsTrue(ToCheck.LeftVert.SecondNode != null);
 				Assert.IsTrue (ToCheck.LeftVert.SecondNode == ToReturn);
 
 				//set the status of the verts and register with the appropriate list
-				if (OpenVerts > FilledVerts)
+				if (Creator == 1 && !ToReturn.RightVert.SecondNodeOpen) //my creator made me to his left, he is to my right.
+				{
+					ToReturn.RightVert.SecondNodeOpen = true;				//set to open for the vert that spawned us
+				}
+				else if (OpenVerts > FilledVerts)
 				{
 					ToReturn.RightVert.SecondNodeOpen = true;
 					FilledVerts++;
@@ -293,19 +277,18 @@ public class RandomGraph { // : MonoBehaviour {
 				ToReturn.UpVert = ToCheck.DownVert;
 				ToReturn.UpVert.SecondNode = ToReturn;
 
-				//set to open for the vert that spawned us
-				if (Creator == 2 && !ToReturn.UpVert.SecondNodeOpen) //my creator made me to his down, he is to my up.
-				{
-					ToReturn.UpVert.SecondNodeOpen = true;
-					FilledVerts++;
-				}
+
 
 				//sanity check to make sure I remember how object references work in C++
 				Assert.IsTrue(ToCheck.DownVert.SecondNode != null);
 				Assert.IsTrue (ToCheck.DownVert.SecondNode == ToReturn);
 
 				//set the status of the verts and register with the appropriate list
-				if (OpenVerts > FilledVerts)
+				if (Creator == 2 && !ToReturn.UpVert.SecondNodeOpen) //my creator made me to his down, he is to my up.
+				{
+					ToReturn.UpVert.SecondNodeOpen = true;				//set to open for the vert that spawned us
+				}
+				else if (OpenVerts > FilledVerts)
 				{
 					ToReturn.UpVert.SecondNodeOpen = true;
 					FilledVerts++;
@@ -339,26 +322,26 @@ public class RandomGraph { // : MonoBehaviour {
 		if (!(ToReturn.DownVert.LinksToWall)) 
 		{
 			//check for a node with an open connection
-			GraphNode ToCheck = GetNodeAtLocation(x, y-1);
+			GraphNode ToCheck = GetNodeAtLocation(x, y+1);
 
 			if (ToCheck != null)
 			{
 				ToReturn.DownVert = ToCheck.UpVert;
 				ToReturn.DownVert.SecondNode = ToReturn;
 
-				//set to open for the vert that spawned us
-				if (Creator == 3 && !ToReturn.DownVert.SecondNodeOpen) //my creator made me to his up, he is to my down.
-				{
-					ToReturn.DownVert.SecondNodeOpen = true;
-					FilledVerts++;
-				}
+
 
 				//sanity check to make sure I remember how object references work in C++
 				Assert.IsTrue(ToCheck.UpVert.SecondNode != null);
 				Assert.IsTrue (ToCheck.UpVert.SecondNode == ToReturn);
 
 				//set the status of the verts and register with the appropriate list
-				if (OpenVerts > FilledVerts)
+				//set to open for the vert that spawned us
+				if (Creator == 3 && !ToReturn.DownVert.SecondNodeOpen) //my creator made me to his up, he is to my down.
+				{
+					ToReturn.DownVert.SecondNodeOpen = true;
+				}
+				else if (OpenVerts > FilledVerts)
 				{
 					ToReturn.DownVert.SecondNodeOpen = true;
 					FilledVerts++;
@@ -404,6 +387,105 @@ public class RandomGraph { // : MonoBehaviour {
 		ToReturn.MyNodeNumber = CurrentNodes;
 		CurrentNodes++;
 		TheGraph [ToReturn.X + (ToReturn.Y * MaxXNodes)] = ToReturn;
+
+
+
+		if (Creator == 0) //my creator made me to his right, he is to my left.
+		{
+			GraphNode MyParent = GetNodeAtLocation(x-1, y);
+
+			if ((ToReturn.LeftVert.FirstNode == null) || (ToReturn.LeftVert.FirstNodeOpen == false))
+			{
+				Assert.IsTrue (false);
+			}
+
+
+			Assert.IsFalse ((ToReturn.LeftVert.FirstNode == null) || (ToReturn.LeftVert.FirstNodeOpen == false));
+			/**/
+			Assert.IsFalse((ToReturn.LeftVert.FirstNode != MyParent));
+
+			Assert.IsFalse ((ToReturn.LeftVert.SecondNodeOpen != true) || ToReturn.LeftVert.SecondNode == null);
+
+			Assert.IsFalse((ToReturn.LeftVert.SecondNode != ToReturn));
+
+			Assert.IsFalse (MyParent.RightVert.SecondNodeOpen != true);
+			Assert.IsFalse (MyParent.RightVert.SecondNode != ToReturn);
+
+			Assert.IsTrue (ToReturn.LeftVert == MyParent.RightVert);
+
+
+
+		}
+		else if(Creator == 1)//my creator made me to his left, he is to my right.
+		{
+			GraphNode MyParent = GetNodeAtLocation(x+1, y);
+
+
+			if ((ToReturn.RightVert.FirstNode == null) || (ToReturn.RightVert.FirstNodeOpen == false))
+			{
+				Assert.IsTrue (false);
+			}
+
+
+			Assert.IsFalse ((ToReturn.RightVert.FirstNode == null) || (ToReturn.RightVert.FirstNodeOpen == false));
+
+			Assert.IsFalse((ToReturn.RightVert.FirstNode != MyParent));
+
+			Assert.IsFalse ((ToReturn.RightVert.SecondNodeOpen != true) || ToReturn.RightVert.SecondNode == null);
+
+			Assert.IsFalse((ToReturn.RightVert.SecondNode != ToReturn));
+
+			Assert.IsFalse (MyParent.LeftVert.SecondNodeOpen != true);
+			Assert.IsFalse (MyParent.LeftVert.SecondNode != ToReturn);
+
+			Assert.IsTrue (ToReturn.RightVert == MyParent.LeftVert);
+		}
+		else if (Creator == 2) //my creator made me to his down, he is to my up.
+		{
+			GraphNode MyParent = GetNodeAtLocation(x, y-1);
+
+			if ((ToReturn.UpVert.FirstNode == null) || (ToReturn.UpVert.FirstNodeOpen == false))
+			{
+				Assert.IsTrue (false);
+			}
+
+			Assert.IsFalse ((ToReturn.UpVert.FirstNode == null) || (ToReturn.UpVert.FirstNodeOpen == false));
+
+			Assert.IsFalse((ToReturn.UpVert.FirstNode != MyParent));
+
+			Assert.IsFalse ((ToReturn.UpVert.SecondNodeOpen != true) || ToReturn.UpVert.SecondNode == null);
+
+			Assert.IsFalse((ToReturn.UpVert.SecondNode != ToReturn));
+
+			Assert.IsFalse (MyParent.DownVert.SecondNodeOpen != true);
+			Assert.IsFalse (MyParent.DownVert.SecondNode != ToReturn);
+
+			Assert.IsTrue (ToReturn.UpVert == MyParent.DownVert);
+		}
+		else if (Creator == 3) //my creator made me to his up, he is to my down.
+		{
+			GraphNode MyParent = GetNodeAtLocation(x, y+1);
+
+			if ((ToReturn.DownVert.FirstNode == null) || (ToReturn.DownVert.FirstNodeOpen == false))
+			{
+				Assert.IsTrue (false);
+			}
+
+			Assert.IsFalse ((ToReturn.DownVert.FirstNode == null) || (ToReturn.DownVert.FirstNodeOpen == false));
+
+			Assert.IsFalse((ToReturn.DownVert.FirstNode != MyParent));
+
+			Assert.IsFalse ((ToReturn.DownVert.SecondNodeOpen != true) || ToReturn.DownVert.SecondNode == null);
+
+			Assert.IsFalse((ToReturn.DownVert.SecondNode != ToReturn));
+
+			Assert.IsFalse (MyParent.UpVert.SecondNodeOpen != true);
+			Assert.IsFalse (MyParent.UpVert.SecondNode != ToReturn);
+
+			Assert.IsTrue (ToReturn.DownVert == MyParent.UpVert);
+		}
+
+
 		return ToReturn;
 	}
 
@@ -447,7 +529,7 @@ public class RandomGraph { // : MonoBehaviour {
 						{
 							//both are already open, do nothing.  
 						} 
-						else if (GetNodeAtLocation (TempNode.X - 1, TempNode.Y) == null)
+						else if ( (GetNodeAtLocation (TempNode.X - 1, TempNode.Y)) == null)
 						{
 							//found an open space, insert a node there and be done with this popped node
 							FoundOpenEmpty = true;
@@ -475,11 +557,11 @@ public class RandomGraph { // : MonoBehaviour {
 						{
 							//both are already open, do nothing.  
 						} 
-						else if (GetNodeAtLocation (TempNode.X , TempNode.Y + 1) == null)
+						else if (GetNodeAtLocation (TempNode.X , TempNode.Y - 1) == null)
 						{
 							//found an open space, insert a node there and be done with this popped node
 							FoundOpenEmpty = true;
-							GenerateNodeInsideGraph (TempNode.X , TempNode.Y + 1, 3);
+							GenerateNodeInsideGraph (TempNode.X , TempNode.Y - 1, 3);
 						}
 					}
 
@@ -489,11 +571,11 @@ public class RandomGraph { // : MonoBehaviour {
 						{
 							//both are already open, do nothing.  
 						} 
-						else if (GetNodeAtLocation (TempNode.X , TempNode.Y -1 ) == null)
+						else if (GetNodeAtLocation (TempNode.X , TempNode.Y +1 ) == null)
 						{
 							//found an open space, insert a node there and be done with this popped node
 							FoundOpenEmpty = true;
-							GenerateNodeInsideGraph (TempNode.X, TempNode.Y - 1, 2);
+							GenerateNodeInsideGraph (TempNode.X, TempNode.Y + 1, 2);
 						}
 					}
 						
@@ -534,6 +616,10 @@ public class RandomGraph { // : MonoBehaviour {
 						{
 							//This is a closed off connection between existing nodes, do nothing
 						} 
+						else if (GetNodeAtLocation (TempNode.X-1 , TempNode.Y ) != null)
+						{
+							//One of us is keeping the link closed, do nothing for now.  may change this behavior in the future.
+						} 
 						else //There's a possible connection, make it happen
 						{
 							FoundOpenAvailible = true;
@@ -541,7 +627,7 @@ public class RandomGraph { // : MonoBehaviour {
 						}
 
 					}
-
+					///////////////////////
 					if(!TempNode.RightVert.LinksToWall && !FoundOpenAvailible)                                             //(TempNode.LeftVert.FirstNodeOpen && !TempNode.LeftVert.LinksToWall && !FoundOpenEmpty)
 					{
 
@@ -552,6 +638,10 @@ public class RandomGraph { // : MonoBehaviour {
 						else if (!TempNode.RightVert.FirstNodeOpen && !TempNode.RightVert.SecondNodeOpen && !(GetNodeAtLocation (TempNode.X+1 , TempNode.Y ) == null))
 						{
 							//This is a closed off connection between existing nodes, do nothing
+						} 
+						else if (GetNodeAtLocation (TempNode.X+1 , TempNode.Y ) != null)
+						{
+							//One of us is keeping the link closed, do nothing for now.  may change this behavior in the future.
 						} 
 						else //There's a possible connection, make it happen
 						{
@@ -572,6 +662,10 @@ public class RandomGraph { // : MonoBehaviour {
 						{
 							//This is a closed off connection between existing nodes, do nothing
 						} 
+						else if ((GetNodeAtLocation (TempNode.X , TempNode.Y-1 ) != null))
+						{
+							//One of us is keeping the link closed, do nothing for now.  may change this behavior in the future.
+						} 
 						else //There's a possible connection, make it happen
 						{
 							FoundOpenAvailible = true;
@@ -586,11 +680,13 @@ public class RandomGraph { // : MonoBehaviour {
 						if (TempNode.DownVert.FirstNodeOpen && TempNode.DownVert.SecondNodeOpen)
 						{
 							//This has become an open connection, do nothing
-						} 
-						else if (!TempNode.DownVert.FirstNodeOpen && !TempNode.DownVert.SecondNodeOpen && !(GetNodeAtLocation (TempNode.X , TempNode.Y+1 ) == null))
+						} else if (!TempNode.DownVert.FirstNodeOpen && !TempNode.DownVert.SecondNodeOpen && !(GetNodeAtLocation (TempNode.X, TempNode.Y + 1) == null))
 						{
 							//This is a closed off connection between existing nodes, do nothing
-						} 
+						} else if ((GetNodeAtLocation (TempNode.X, TempNode.Y + 1) != null))
+						{
+							//One of us is keeping the link closed, do nothing for now.  may change this behavior in the future.
+						}
 						else //There's a possible connection, make it happen
 						{
 							FoundOpenAvailible = true;
@@ -607,7 +703,7 @@ public class RandomGraph { // : MonoBehaviour {
 
 		}
 
-
+		PrintGraph ();
 		
 	}
 
@@ -624,6 +720,7 @@ public class RandomGraph { // : MonoBehaviour {
 		int printedNodes = 0;
 		int currentX = 0;
 		int currentY = 0;
+		string ToPrint = "";
 
 		while (printedNodes < (MaxXNodes * MaxYNodes))
 		{
@@ -631,21 +728,24 @@ public class RandomGraph { // : MonoBehaviour {
 
 			if (TempNode != null)
 			{
-				Debug.Log ("{"+ TempNode.X + "," + TempNode.Y +"(" + TempNode.LeftVert.FirstNodeOpen + "," + TempNode.RightVert.FirstNodeOpen + "," +TempNode.UpVert.FirstNodeOpen + ","+ TempNode.DownVert.FirstNodeOpen + ")}     |     ");
+				ToPrint = ToPrint + "{" + TempNode.X + "," + TempNode.Y + "(" + TempNode.LeftVert.FirstNodeOpen + "," + TempNode.RightVert.FirstNodeOpen + "," + TempNode.UpVert.FirstNodeOpen + "," + TempNode.DownVert.FirstNodeOpen + ")} | ";
+				//Debug.Log ("{"+ TempNode.X + "," + TempNode.Y +"(" + TempNode.LeftVert.FirstNodeOpen + "," + TempNode.RightVert.FirstNodeOpen + "," +TempNode.UpVert.FirstNodeOpen + ","+ TempNode.DownVert.FirstNodeOpen + ")}     |     ");
 			}
 			else
 			{
-				Debug.Log("{" + currentX + "," + currentY + "(" + "                    )}");
+				ToPrint = ToPrint + "{" + currentX + "," + currentY + "(" + " )}";
+				//Debug.Log("{" + currentX + "," + currentY + "(" + "                    )}");
 			}
 
 
 
 			if (currentX == (MaxXNodes -1))
 			{
-
-				Debug.Log ("\n");
+				Debug.Log (ToPrint + "\n");
+				//Debug.Log ("\n");
 				currentX = 0;
 				currentY++;
+				ToPrint = "";
 				//print a new line
 				//set x to 0
 				//move y down

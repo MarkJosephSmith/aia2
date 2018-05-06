@@ -19,7 +19,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4663943453134452}
-  - component: {fileID: 114983317318011014}
   - component: {fileID: 114164505232657112}
   m_Layer: 0
   m_Name: GraphMakerPrefab
@@ -55,17 +54,3 @@ MonoBehaviour:
   maxX: 10
   maxY: 10
   desiredNodes: 5
---- !u!114 &114983317318011014
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1074397635412970}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c3715bfb344fb084da766f81db208ea8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxX: 10
-  maxY: 10
-  desiredNodes: 6

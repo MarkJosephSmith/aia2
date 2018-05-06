@@ -227,6 +227,21 @@ Prefab:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 114164505232657112, guid: 4b5c970ff0bab9341aec0c7cc85ec1bc,
+        type: 2}
+      propertyPath: desiredNodes
+      value: 30000
+      objectReference: {fileID: 0}
+    - target: {fileID: 114164505232657112, guid: 4b5c970ff0bab9341aec0c7cc85ec1bc,
+        type: 2}
+      propertyPath: maxX
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 114164505232657112, guid: 4b5c970ff0bab9341aec0c7cc85ec1bc,
+        type: 2}
+      propertyPath: maxY
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 4b5c970ff0bab9341aec0c7cc85ec1bc, type: 2}
   m_IsPrefabParent: 0

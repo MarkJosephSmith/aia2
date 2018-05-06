@@ -160,7 +160,7 @@ public class RandomGraph { // : MonoBehaviour {
 
 			
 
-		//Check for surounding open verts
+		//Check for surounding open verts, do they point to an empty space or a taken one?  Are we already linked?
 		if (!(ToReturn.LeftVert.LinksToWall)) 
 		{
 			//check for a node with an open connection

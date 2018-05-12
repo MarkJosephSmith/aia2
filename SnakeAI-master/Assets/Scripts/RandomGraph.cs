@@ -15,6 +15,10 @@ public class RandomGraph { // : MonoBehaviour {
 	Queue<GraphNode> NodesWithOpenVerts = new Queue<GraphNode>(); //Nodes that contain an open vert without a node on the other end
 	Queue<GraphNode> NodesWithAvailibleVerts= new Queue<GraphNode>(); //Nodes that contain a closed vert
 
+
+	int VertTravelMin = 0;
+	int VertTravelMax = 0;
+
 	// Use this for initialization
 	void Start () {
 
@@ -30,7 +34,7 @@ public class RandomGraph { // : MonoBehaviour {
 	}
 
 	//parameters are counts and are thus not zero based.  They start at 1 if you want to actually have a graph.  An array with 3 colums and 2 rows would have columns X0, X1, X2 and rows Y0, Y1.
-	public RandomGraph(int MaxHoriz, int MaxVertical, int DesiredN)
+	public RandomGraph(int MaxHoriz, int MaxVertical, int DesiredN, int TravelMin, int TravelMax)
 	{
 		DesiredNodes = DesiredN;
 		MaxXNodes = MaxHoriz;
@@ -38,26 +42,17 @@ public class RandomGraph { // : MonoBehaviour {
 		CurrentNodes = 0;
 		TheGraph = new GraphNode[MaxXNodes * MaxYNodes];
 		Array.Clear (TheGraph, 0, TheGraph.Length - 1);
+		VertTravelMin = TravelMin;
+		VertTravelMax = TravelMax;
 
 
-		if ( ((MaxXNodes * MaxYNodes) < DesiredNodes) || (MaxHoriz < 1)  ||  (MaxVertical <1) || (DesiredNodes < 1)  ) 
+		if ( ((MaxXNodes * MaxYNodes) < DesiredNodes) || (MaxHoriz < 1) || (VertTravelMin > VertTravelMax) || (VertTravelMin < 0)  ||  (MaxVertical <1) || (DesiredNodes < 1)  ) 
 		{
 			Assert.IsTrue (false);
 		}
 
 
 	}
-
-	/*
-	//Create the first node which will be at a random location and will be used as the starting or seed node.
-	GraphNode GenerateFirstNodeInGraph()
-	{
-
-
-
-		return null;
-	}
-	*/
 
 	//x and y should be the zero based x and y coordinates in the graph.  Y will be converted inside.  So if y = 1 it will be converted to (1 * MaxXNodes).  
 	//Creator is the node that spawned us from an open vert, we must be open to them.  0,1,2,3 for left, right, up, down. 1 means my creator made me to his left, he is to my right.   
@@ -80,7 +75,7 @@ public class RandomGraph { // : MonoBehaviour {
 		//Look around this node for walls, other nodes with open verts, open spaces, and use some sort of randomization to decide what connections we want.
 		int PossibleVerts = 4;
 
-		//these checks are all individual, no else's or else if's because the graph could be a single square.
+		//these checks are all individual, because the graph could be a single square.
 		if (x == 0) 
 		{
 			PossibleVerts--;
@@ -132,6 +127,7 @@ public class RandomGraph { // : MonoBehaviour {
 			ToReturn.LeftVert.SecondNode = ToReturn;
 			ToReturn.LeftVert.SecondNodeOpen = true;
 			ToReturn.LeftVert.FirstNodeOpen = true;
+			//ToReturn.LeftVert.TravelCost = UnityEngine.Random.Range(VertTravelMin, VertTravelMax); //add a cost to the newly opened path
 		}
 		else if(Creator == 1)//my creator made me to his left, he is to my right.
 		{
@@ -140,6 +136,7 @@ public class RandomGraph { // : MonoBehaviour {
 			ToReturn.RightVert.SecondNode = ToReturn;
 			ToReturn.RightVert.SecondNodeOpen = true;
 			ToReturn.RightVert.FirstNodeOpen = true;
+			//ToReturn.RightVert.TravelCost = UnityEngine.Random.Range(VertTravelMin, VertTravelMax); //add a cost to the newly opened path
 		}
 		else if (Creator == 2) //my creator made me to his down, he is to my up.
 		{
@@ -148,6 +145,7 @@ public class RandomGraph { // : MonoBehaviour {
 			ToReturn.UpVert.SecondNode = ToReturn;
 			ToReturn.UpVert.SecondNodeOpen = true;
 			ToReturn.UpVert.FirstNodeOpen = true;
+			//ToReturn.UpVert.TravelCost = UnityEngine.Random.Range(VertTravelMin, VertTravelMax); //add a cost to the newly opened path
 		}
 		else if (Creator == 3) //my creator made me to his up, he is to my down.
 		{
@@ -156,6 +154,7 @@ public class RandomGraph { // : MonoBehaviour {
 			ToReturn.DownVert.SecondNode = ToReturn;
 			ToReturn.DownVert.SecondNodeOpen = true;
 			ToReturn.DownVert.FirstNodeOpen = true;
+			//ToReturn.DownVert.TravelCost = UnityEngine.Random.Range(VertTravelMin, VertTravelMax); //add a cost to the newly opened path
 		}
 
 
@@ -182,11 +181,13 @@ public class RandomGraph { // : MonoBehaviour {
 				if (Creator == 0 && !ToReturn.LeftVert.SecondNodeOpen) //my creator made me to his right, he is to my left.
 				{
 					ToReturn.LeftVert.SecondNodeOpen = true;				//set to open for the vert that spawned us
+					ToReturn.LeftVert.TravelCost = UnityEngine.Random.Range(VertTravelMin, VertTravelMax); //add a cost to the newly opened path
 				}
 				else if (OpenVerts > FilledVerts) 
 				{
 					ToReturn.LeftVert.SecondNodeOpen = true;
 					FilledVerts++;
+					//ToReturn.LeftVert.TravelCost = UnityEngine.Random.Range(VertTravelMin, VertTravelMax); //add a cost to the newly opened path
 
 				} 
 				else
@@ -206,11 +207,13 @@ public class RandomGraph { // : MonoBehaviour {
 					FilledVerts++;
 					ToReturn.LeftVert.FirstNodeOpen = true;
 					NodesWithOpenVerts.Enqueue (ToReturn);
+					//ToReturn.LeftVert.TravelCost = UnityEngine.Random.Range(VertTravelMin, VertTravelMax); //add a cost to the newly opened path
 				} 
 				else
 				{
 					NodesWithAvailibleVerts.Enqueue (ToReturn);
 				}
+
 
 			}
 
@@ -485,6 +488,23 @@ public class RandomGraph { // : MonoBehaviour {
 			Assert.IsTrue (ToReturn.DownVert == MyParent.UpVert);
 		}
 
+		//set vertex costs
+		if (ToReturn != null && ToReturn.LeftVert.OpenPath())
+		{
+			ToReturn.LeftVert.TravelCost = UnityEngine.Random.Range(VertTravelMin, VertTravelMax); //add a cost to the newly opened path
+		}
+		if (ToReturn != null && ToReturn.RightVert.OpenPath())
+		{
+			ToReturn.RightVert.TravelCost = UnityEngine.Random.Range(VertTravelMin, VertTravelMax); //add a cost to the newly opened path
+		}
+		if (ToReturn != null && ToReturn.UpVert.OpenPath())
+		{
+			ToReturn.UpVert.TravelCost = UnityEngine.Random.Range(VertTravelMin, VertTravelMax); //add a cost to the newly opened path
+		}
+		if (ToReturn != null && ToReturn.DownVert.OpenPath())
+		{
+			ToReturn.DownVert.TravelCost = UnityEngine.Random.Range(VertTravelMin, VertTravelMax); //add a cost to the newly opened path
+		}
 
 		return ToReturn;
 	}
@@ -708,7 +728,7 @@ public class RandomGraph { // : MonoBehaviour {
 	}
 
 	//Y val will be recalculated inside the function
-	GraphNode GetNodeAtLocation(int x, int y)
+	public GraphNode GetNodeAtLocation(int x, int y)
 	{
 		GraphNode ToReturn = TheGraph [(x + (y * MaxXNodes))];
 		return ToReturn;
@@ -737,7 +757,42 @@ public class RandomGraph { // : MonoBehaviour {
 				//Debug.Log("{" + currentX + "," + currentY + "(" + "                    )}");
 			}
 
+			//this is the print David Wants
+			if (TempNode != null)
+			{
+				using (System.IO.StreamWriter file = new System.IO.StreamWriter (@"C:\Grad School\AI\a2\PrintedGraph" + DesiredNodes +".txt", true))
+				{
 
+					if (TempNode.LeftVert.OpenPath ())
+					{
+						int OtherNodeNumber = (TempNode.LeftVert.GetConnectedNode (TempNode)).MyNodeNumber;
+						string LineToPrintToFile = "(" + TempNode.MyNodeNumber+ "," + OtherNodeNumber + "," + TempNode.LeftVert.TravelCost + ")";
+						file.WriteLine (LineToPrintToFile);
+					}
+
+					if (TempNode.RightVert.OpenPath ())
+					{
+						int OtherNodeNumber = (TempNode.RightVert.GetConnectedNode (TempNode)).MyNodeNumber;
+						string LineToPrintToFile = "(" + TempNode.MyNodeNumber+ "," + OtherNodeNumber + "," + TempNode.RightVert.TravelCost + ")";
+						file.WriteLine (LineToPrintToFile);
+					}
+
+					if (TempNode.UpVert.OpenPath ())
+					{
+						int OtherNodeNumber = (TempNode.UpVert.GetConnectedNode (TempNode)).MyNodeNumber;
+						string LineToPrintToFile = "(" + TempNode.MyNodeNumber+ "," + OtherNodeNumber + "," + TempNode.UpVert.TravelCost + ")";
+						file.WriteLine (LineToPrintToFile);
+					}
+
+					if (TempNode.DownVert.OpenPath ())
+					{
+						int OtherNodeNumber = (TempNode.DownVert.GetConnectedNode (TempNode)).MyNodeNumber;
+						string LineToPrintToFile = "(" + TempNode.MyNodeNumber+ "," + OtherNodeNumber + "," + TempNode.DownVert.TravelCost + ")";
+						file.WriteLine (LineToPrintToFile);
+					}
+				}
+				
+			}
 
 			if (currentX == (MaxXNodes -1))
 			{
@@ -757,6 +812,8 @@ public class RandomGraph { // : MonoBehaviour {
 			}
 			printedNodes++;
 		}
+
+
 
 
 	}

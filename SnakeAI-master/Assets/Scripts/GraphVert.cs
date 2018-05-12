@@ -4,6 +4,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 /*WARNING!  THESE ARE ACTUALLY THE GRAPH EDGES, NOT VERTICIES.*/
 public class GraphVert {    // : MonoBehaviour {
 
@@ -14,6 +15,8 @@ public class GraphVert {    // : MonoBehaviour {
 	public bool FirstNodeOpen;
 	public bool SecondNodeOpen;
 	public bool LinksToWall;
+
+	public int TravelCost = 1;
 
 	// Use this for initialization
 	void Start () {
@@ -42,6 +45,29 @@ public class GraphVert {    // : MonoBehaviour {
 		}
 		return true;
 	}
+
+	public bool OpenPath()
+	{
+		return (FirstNodeOpen && SecondNodeOpen && (!LinksToWall));
+	}
+
+	//given a graph node, return the other node connected by this vert
+	public GraphNode GetConnectedNode(GraphNode StartingNode)
+	{
+		if (StartingNode == FirstNode)
+		{
+			return SecondNode;
+		} else if (StartingNode == SecondNode)
+		{
+			return FirstNode;
+		} else
+		{
+			Assert.IsTrue (false);
+			return null;
+		}
+
+	}
+
 
 
 }

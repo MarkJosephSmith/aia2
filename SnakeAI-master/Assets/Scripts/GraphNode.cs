@@ -16,6 +16,14 @@ public class GraphNode{ // : MonoBehaviour {                   //public class Gr
 	public bool IsWall {  get;  set;} //A wall node has only one node connected to it and that vert is always closed.
 	public int MyNodeNumber;
 
+	public bool IsStart = false;
+	public bool IsGoal = false;
+
+	public GraphNode MyParentNode;
+	public int GCost = -1;
+	public int HCost = -1;
+	public int FCost = -1;
+
 	public GraphNode (){
 	}
 
@@ -27,5 +35,14 @@ public class GraphNode{ // : MonoBehaviour {                   //public class Gr
 	// Update is called once per frame
 	void Update () {
 		
+	}
+
+	//gives the magnitude of the distance between two nodes by getting the difference in X and the difference in Y
+	public int DistanceBetweenNodes(GraphNode Node2)
+	{
+		int ToReturn = 0;
+
+		ToReturn = Mathf.Abs (Mathf.Abs (this.X) - Mathf.Abs (Node2.X)) + Mathf.Abs (Mathf.Abs (this.Y) - Mathf.Abs (Node2.Y));
+		return ToReturn;
 	}
 }
